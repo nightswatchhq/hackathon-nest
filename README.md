@@ -59,14 +59,22 @@ What carries across: every `dataSource` becomes a contract, every `template` bec
 ABIs are vendored from IPFS, `startBlock` is kept, and the handler list becomes the event allowlist.
 The import prints a report of what it mapped and what it skipped. Read it.
 
-What does not carry across, because a nest indexes logs rather than running your mapping:
+What does not carry across automatically, because the manifest does not contain it. Each has a
+config equivalent you write by hand:
 
 - **Mapping logic.** A nest gives you one table per event, exactly as emitted. Entities your
   mapping derived from several events become SQL views (see `views/` here). Most hackathon
   mappings are a `GROUP BY` in disguise.
-- **Block handlers and call handlers.** No equivalent. The contract will index every event its ABI
-  defines instead; narrow it with `events = [...]` in `nuthatch.toml`.
-- **File data sources** (IPFS). The content hash is stored as a column; nothing is fetched.
+- **Contract calls in handlers.** A `[[calls]]` block with `on = "<table>"` fires one `eth_call`
+  per row at the row's block, arguments taken from the row's columns, the same thing
+  `contract.balanceOf(event.params.to)` does in a mapping. Needs `nuthatch dev --state-rpc <url>`
+  with an endpoint that serves state at those blocks; the Sepolia endpoint here prunes state about
+  a million blocks behind tip, which is months of hackathon.
+- **Call handlers.** `[extract] top_level_calls = true` decodes transactions sent to your contracts.
+  Block handlers have no equivalent; the contract will index every event its ABI defines instead,
+  narrowed with `events = [...]`.
+- **File data sources.** A `[[ipfs]]` block resolves the documents a column's CIDs name, given
+  `--ipfs <gateway>`. Without one the CID is stored as a column and nothing is fetched.
 - **Factory templates need a creating event.** The manifest cannot say which event spawns a
   template, so the report will tell you to add a `[[factories]]` block naming it.
 
