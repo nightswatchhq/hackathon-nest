@@ -100,21 +100,27 @@ narrow log window.
 
 ```sh
 nuthatch init --from-subgraph QmYourArcDeploymentId \
-  --chain arc-testnet --rpc https://rpc.testnet.arc.network --dir my-arc-nest
-nuthatch dev --dir my-arc-nest --window 80
+  --chain arc-testnet --rpc https://arc-testnet.drpc.org --dir my-arc-nest
+nuthatch dev --dir my-arc-nest --window 4000 --finality-only
 ```
 
-Measured against `https://rpc.testnet.arc.network` on 2026-09-11 with `nuthatch doctor`: `eth_getLogs`
-up to 160 blocks in a range-only probe, JSON-RPC batches of 200 fine, and HTTP 429 on rapid probes.
-So start with `--window 80`, leave `--concurrency` at its default of 1, and re-probe with your own
-address before a long backfill, because an address-filtered window is usually much wider:
+Measured on 2026-09-11 with `nuthatch doctor --address` and by hand. The official endpoints,
+`rpc.testnet.arc.io` and `rpc.testnet.arc.network`, serve archive depth and answer a four-address
+`eth_getLogs` up to 20,000 blocks, but they enforce a sliding quota that a cold start drains, after
+which every request gets HTTP 429 for a while and nuthatch 3.6.1 gives up
+([nuthatch#1297](https://github.com/nightswatchhq/nuthatch/issues/1297)). dRPC's
+`arc-testnet.drpc.org` serves 5,120-block windows with archive depth and did not throttle a
+500,000-block backfill, which took about three minutes at `--window 4000`. Start there, and
+re-probe your own contract before trusting any of it:
 
 ```sh
-nuthatch doctor --rpc https://rpc.testnet.arc.network --address 0xYourContract
+nuthatch doctor --rpc https://arc-testnet.drpc.org --address 0xYourContract
 ```
 
 Arc's tip was at block 61.5M with sub-second blocks, so a backfill "from deployment" for a contract
-deployed weeks ago is a real backfill. Prefer `--backfill 50000` (blocks back from tip) while iterating.
+deployed weeks ago is a few hundred thousand blocks. `--finality-only` skips the reorg check and the
+`finalized` probe on every poll, which on a throttled endpoint is the difference between finishing
+and not.
 
 One chain per process. A Sepolia nest and an Arc nest are two `nuthatch dev` runs on two ports
 (`--listen 127.0.0.1:8289` for the second).
