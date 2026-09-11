@@ -1,0 +1,44 @@
+# semantic.toml - what this nest's data *means* (RFC-0016). Read by the MCP `schema`
+# tool, the admin UI, and the scaffolded skill. Edit descriptions freely; the
+# `[table.*.footguns]` are DERIVED from the ABI and regenerated - leave them be.
+
+schema_version = 1
+
+[nest]
+description = "A starter nest for hackathon builders: Circle's testnet USDC on Sepolia, indexed from a recent block so the tables fill in seconds. Swap the contract for your own."
+
+[table.usdc__approval]
+description = "ERC-20 approvals on Sepolia USDC: an owner allowing a spender to move up to `value` base units (6 decimals)."
+grain = "one row per Approval(address,address,uint256) event"
+
+[table.usdc__approval.columns]
+owner = "The token holder granting the allowance."
+spender = "The address allowed to spend on the owner's behalf."
+value = "Amount in base units (6 decimals). Exact text; use `value_dec` for arithmetic."
+
+[table.usdc__approval.footguns]
+big_ints = ["value"]
+overflows_dec = ["value"]
+
+[table.usdc__transfer]
+description = "ERC-20 transfers on Sepolia USDC. `value` is in base units; divide `value_dec` by 1,000,000 for whole USDC. A mint has `from` = the zero address, a burn has `to` = the zero address."
+grain = "one row per Transfer(address,address,uint256) event"
+
+[table.usdc__transfer.columns]
+from = "Sender. Reserved word: quote it as \"from\" in SQL."
+to = "Recipient. Reserved word: quote it as \"to\" in SQL."
+value = "Amount in base units (6 decimals). Exact text; use `value_dec` for arithmetic."
+
+[table.usdc__transfer.footguns]
+reserved_words = [
+    "from",
+    "to",
+]
+big_ints = ["value"]
+overflows_dec = ["value"]
+
+[view.recent_transfers]
+description = "The last 100 USDC transfers, newest first, with the amount in whole USDC."
+
+[view.top_recipients]
+description = "The 20 addresses that received the most USDC since start_block, with transfer count and total."

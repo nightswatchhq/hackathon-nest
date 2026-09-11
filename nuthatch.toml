@@ -1,0 +1,21 @@
+[nest]
+name = "hackathon-nest"
+chain = "sepolia"
+chain_id = 11155111
+# The one keyless Sepolia endpoint that passed `nuthatch doctor` on 2026-09-11 (getLogs up to
+# 2,560 blocks, batching fine, state pruned ~1M blocks behind tip - logs are not, and a nest
+# reads logs). Bring your own keyed endpoint with `nuthatch dev --rpc <url>`; it never lands here.
+rpc_urls = ["https://ethereum-sepolia-rpc.publicnode.com"]
+schema_version = 1
+block_timestamps = true
+
+# Circle's testnet USDC, the busiest ERC-20 on Sepolia, so the tables fill within seconds.
+# start_block is the tip on 2026-09-11, not the deployment block: this nest exists to show the
+# loop working, not to hold history. Replace this whole block with your own contract, or scaffold
+# from your subgraph with `nuthatch init --from-subgraph <deployment-id>` (see README).
+[[contracts]]
+alias = "usdc"
+address = "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238"
+start_block = 11680000
+abi = "abis/usdc.json"
+events = ["Transfer", "Approval"]
