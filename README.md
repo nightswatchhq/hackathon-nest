@@ -150,10 +150,11 @@ seconds gets the same answer seventeen times per block. `GET /ready` is cheap an
 `newHeads` on your RPC websocket and query once per block. This is what fixes the Studio quota
 too, if you keep the subgraph in the loop.
 
-**CORS.** The nest sets no `Access-Control-Allow-Origin` header, so a browser page on another
-origin cannot call it directly. Call it from your server side (a Next.js route handler, an Express
-route) and return the rows to the page, which is where an API key would live anyway. If you must
-hit it from the browser, put a reverse proxy in front that adds the header.
+**CORS.** Off by default: the nest sets no `Access-Control-Allow-Origin` header unless you pass
+`--cors <ORIGIN>` to `nuthatch dev` or `nuthatch serve` (repeatable, or `*`; since 3.8.0). With it, a
+page on that origin can call the nest directly. Otherwise call it from your server side (a Next.js
+route handler, an Express route) and return the rows to the page, which is where an API key would
+live anyway.
 
 There is also an MCP server (`nuthatch mcp`) if you are building with a coding agent; the scaffolded
 `.claude/skills/nuthatch/` tells the agent how to query this nest.
