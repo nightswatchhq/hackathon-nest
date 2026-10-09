@@ -1,6 +1,6 @@
 # hackathon-nest
 
-A [Nuthatch](https://github.com/nightswatchhq/nuthatch) starter for hackathon builders on
+A [Nuthatch](https://github.com/nuthatch-org/nuthatch) starter for hackathon builders on
 **Sepolia** and **Arc Testnet**. One binary, one command, your contract's events in a local SQL
 database with an HTTP API in front of it. No API key, no query quota, no rate limit, nothing to sign
 up for.
@@ -25,7 +25,7 @@ Prebuilt binary for macOS Apple Silicon and Linux x86_64, installed to `~/.local
 ## 2. Run this starter (about a minute)
 
 ```sh
-nuthatch init --from https://github.com/nightswatchhq/hackathon-nest
+nuthatch init --from https://github.com/nuthatch-org/hackathon-nest
 nuthatch dev --dir hackathon-nest
 ```
 
@@ -108,7 +108,7 @@ Measured on 2026-09-11 with `nuthatch doctor --address` and by hand. The officia
 `rpc.testnet.arc.io` and `rpc.testnet.arc.network`, serve archive depth and answer a four-address
 `eth_getLogs` up to 20,000 blocks, but they enforce a sliding quota that a cold start drains, after
 which every request gets HTTP 429 for a while and nuthatch 3.6.1 gives up
-([nuthatch#1297](https://github.com/nightswatchhq/nuthatch/issues/1297)). dRPC's
+([nuthatch#1297](https://github.com/nuthatch-org/nuthatch/issues/1297)). dRPC's
 `arc-testnet.drpc.org` serves 5,120-block windows with archive depth and did not throttle a
 500,000-block backfill, which took about three minutes at `--window 4000`. Start there, and
 re-probe your own contract before trusting any of it:
@@ -172,7 +172,7 @@ Put a reverse proxy with TLS in front (Caddy is one line: `reverse_proxy :8288`)
 without it. The `/sql` endpoint has its own guards (a query timeout, a row cap, a concurrency cap)
 that protect the box from a runaway query; they are not rate limits on you. systemd and Docker
 recipes are in
-[`docs/operators.md`](https://github.com/nightswatchhq/nuthatch/blob/main/docs/operators.md).
+[`docs/operators.md`](https://github.com/nuthatch-org/nuthatch/blob/main/docs/operators.md).
 
 A cheaper option for a one-week demo is a tunnel from your laptop (`cloudflared tunnel --url
 http://127.0.0.1:8288`), with the obvious caveat that the laptop has to stay open.
@@ -210,6 +210,6 @@ either, before you spend a backfill finding out.
 
 ## Help
 
-The [Night's Watch Discord](https://discord.gg/CQewvyJ69Y) is where the people who run these sit.
+The [Nuthatch Discord](https://discord.gg/CQewvyJ69Y) is where the people who run these sit.
 Subgraph questions that are not about Nuthatch go to
-[nightswatchhq/graph-support](https://github.com/nightswatchhq/graph-support).
+[nuthatch-org/graph-support](https://github.com/nuthatch-org/graph-support).
